@@ -1,1 +1,3 @@
 /backend/virtualenv
+**/__pycache__
+/.vscode
