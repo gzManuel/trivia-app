@@ -171,7 +171,7 @@ def create_app(test_config=None):
   category to be shown. 
   '''
   @app.route('/categories/<int:id>/questions')
-  def get_by_categories_questions(id):
+  def get_questions_by_categories(id):
     category = Category.query.filter_by(id=id).one_or_none()
     if category is None:
       abort(404)
@@ -197,7 +197,49 @@ def create_app(test_config=None):
   one question at a time is displayed, the user is allowed to answer
   and shown whether they were correct or not. 
   '''
+  @app.route('/quizzes', methods=['POST'])
+  def quizzes():
+    try:
+      quiz_category = request.json.get('quiz_category')
+      previous_questions = request.json.get('previous_questions')
 
+      # If the quiz_category is 0 that means that plays with all categories.
+      if quiz_category['id'] != 0:
+        # Getting questions of a specific category.
+        questions = Question.query.filter_by(
+                                            category=quiz_category['id']).all()
+      else:
+        # Getting questions of all categories.
+        questions = Question.query.all()
+      # It uses the function nextQuestion() to get randomly the next question.
+      next_question = nextQuestion(previous_questions, questions)
+      return jsonify({
+        'success': True,
+        'question': next_question,
+        'category': quiz_category
+      })
+    except:
+      abort(422)
+
+  def nextQuestion(previous_questions_id, questions):
+
+    new_questions = questions.copy()
+    for x in range(len(questions)):
+      # Check if there is no previous questions quizzed, and if is None, break
+      # the loop
+      if previous_questions_id is None:
+        break
+      # Removes a question that has been asked in the quizz
+      for y in range(len(previous_questions_id)):
+        if previous_questions_id[y] == questions[x].id:
+          new_questions.remove(questions[x])
+    if len(new_questions) == 0:
+      # When it returns None means that there're not more questions.
+      return None
+    else:
+      # Return a random question between all the leftover questions.
+      i = random.randint(0, len(new_questions)-1)
+      return new_questions[i].format()
   '''
   @TODO: 
   Create error handlers for all expected errors 
