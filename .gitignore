@@ -1,3 +1,5 @@
 /backend/virtualenv
 **/__pycache__
 /.vscode
+/frontend/node_modules
+
