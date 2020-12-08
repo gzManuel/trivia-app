@@ -133,7 +133,7 @@ def create_app(test_config=None):
       })
     except:
       abort(422)
-      
+
   '''
   @TODO: 
   Create a POST endpoint to get questions based on a search term. 
@@ -144,7 +144,24 @@ def create_app(test_config=None):
   only question that include that string within their question. 
   Try using the word "title" to start. 
   '''
+  @app.route('/questions/search', methods=['POST'])
+  def search_question():
 
+    search_term = request.json.get('searchTerm')
+    search = "%{}%".format(search_term)
+
+    # To search all the questions with the search_term without case sensitive
+    questions = Question.query.filter(Question.question.ilike(search)).all()
+    if len(questions) == 0:
+      abort(404)
+    format_questions = [question.format() for question in questions]
+    print(format_questions)
+    return jsonify({
+      'success': True,
+      'questions': format_questions,
+      'total_questions': len(format_questions),
+      'current_category': None
+    })
   '''
   @TODO: 
   Create a GET endpoint to get questions based on category. 
