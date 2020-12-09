@@ -22,7 +22,6 @@ def create_app(test_config=None):
                         'GET,PATCH,POST,DELETE,OPTIONS')
     return response   
 
-
   '''
   @TODO: 
   Create an endpoint to handle GET requests 
@@ -136,12 +135,12 @@ def create_app(test_config=None):
 
   '''
   @TODO: 
-  Create a POST endpoint to get questions based on a search term. 
-  It should return any questions for whom the search term 
+  Create a POST endpoint to get questions based on a search term.
+  It should return any questions for whom the search term
   is a substring of the question. 
 
-  TEST: Search by any phrase. The questions list will update to include 
-  only question that include that string within their question. 
+  TEST: Search by any phrase. The questions list will update to include
+  only question that include that string within their question.
   Try using the word "title" to start. 
   '''
   @app.route('/questions/search', methods=['POST'])
@@ -255,7 +254,7 @@ def create_app(test_config=None):
     }), 400
 
   @app.errorhandler(404)
-  def not_found(error):
+  def resource_not_found(error):
     return jsonify({
       'success': False,
       'error': 404,
@@ -263,7 +262,7 @@ def create_app(test_config=None):
     }), 404
 
   @app.errorhandler(405)
-  def not_found(error):
+  def method_not_allowed(error):
     return jsonify({
       'success': False,
       'error': 405,
