@@ -36,34 +36,26 @@ def create_app(test_config=None):
             'categories': list_categories
         })
 
-    def paginate_questions(request, selection):
-
-        # Function to paginate just 10 questions
-        page = request.args.get('page', 1, type=int)
-        start = (page - 1) * QUESTIONS_PER_PAGE
-        end = start + QUESTIONS_PER_PAGE
-
-        # Using list comprehension.
-        questions = [question.format() for question in selection]
-        current_questions = questions[start:end]
-        return current_questions
-
     @app.route('/questions')
     def get_questions():
-        questions = Question.query.all()
         categories = Category.query.all()
-
         # Using dictionary comprehension.
         list_categories = {category.id: category.type.lower() for category
                            in categories}
-        list_questions = paginate_questions(request, questions)
-        if len(list_questions) == 0:
-            abort(404)
+
+        items_limit = request.args.get('limit', 10, type=int)
+        selected_page = request.args.get('page', 1, type=int)
+        current_index = selected_page - 1
+
+        # Getting paginated questions
+        questions = Question.query.order_by(Question.id).limit(
+            items_limit).offset(current_index * items_limit).all()
+        list_questions = [question.format() for question in questions]
 
         return jsonify({
             'success': True,
             'questions': list_questions,
-            'total_questions': len(questions),
+            'total_questions': len(Question.query.all()),
             'categories': list_categories,
             'current_category': None
         })
