@@ -2,6 +2,7 @@ import os
 from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+from sqlalchemy import exc
 import random
 
 from models import setup_db, Question, Category
@@ -92,7 +93,7 @@ def create_app(test_config=None):
                 'success': True,
                 'created': question.id
             })
-        except:
+        except exc.DataError:
             abort(422)
 
     @app.route('/questions/search', methods=['POST'])
@@ -159,7 +160,7 @@ def create_app(test_config=None):
                 'question': next_question,
                 'category': quiz_category
             })
-        except:
+        except exc.DataError:
             abort(422)
 
     def nextQuestion(previous_questions_id, questions):
