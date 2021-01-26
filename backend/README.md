@@ -52,32 +52,17 @@ Setting the `FLASK_ENV` variable to `development` will detect file changes and r
 
 Setting the `FLASK_APP` variable to `flaskr` directs flask to use the `flaskr` directory and the `__init__.py` file to find the application. 
 
-## Tasks
 
-One note before you delve into your tasks: for each endpoint you are expected to define the endpoint and response data. The frontend will be a plentiful resource because it is set up to expect certain endpoints and response data formats already. You should feel free to specify endpoints in your own way; if you do so, make sure to update the frontend or you will get some unexpected behavior. 
-
-1. Use Flask-CORS to enable cross-domain requests and set response headers. 
-2. Create an endpoint to handle GET requests for questions, including pagination (every 10 questions). This endpoint should return a list of questions, number of total questions, current category, categories. 
-3. Create an endpoint to handle GET requests for all available categories. 
-4. Create an endpoint to DELETE question using a question ID. 
-5. Create an endpoint to POST a new question, which will require the question and answer text, category, and difficulty score. 
-6. Create a POST endpoint to get questions based on category. 
-7. Create a POST endpoint to get questions based on a search term. It should return any questions for whom the search term is a substring of the question. 
-8. Create a POST endpoint to get questions to play the quiz. This endpoint should take category and previous question parameters and return a random questions within the given category, if provided, and that is not one of the previous questions. 
-9. Create error handlers for all expected errors including 400, 404, 422 and 500. 
-
-REVIEW_COMMENT
-```
-
-API REFERENCE
-Error Handling
+## API REFERENCE
+### Error Handling
 Errors are returned as JSON objects in the following format.
-
+```JSON
 {
     "success": False,
     "error": 400,
     "message": "bad request"
 }
+```
 
 The API will return three error types when request fail:
 - 400: Bad Request
@@ -87,26 +72,28 @@ The API will return three error types when request fail:
 - 500: Internal server error
 
 ### Endpoints
-GET '/categories'
-GET '/questions'
-GET '/categories/<int:id>/questions'
-POST '/questions'
-POST '/questions/search'
-POST '/quizzes'
-DELETE '/questions/<int:id>'
+* GET '/categories'
+* GET '/questions'
+* GET '/categories/<int:id>/questions'
+* POST '/questions'
+* POST '/questions/search'
+* POST '/quizzes'
+* DELETE '/questions/<int:id>'
 
-GET '/categories'
+#### GET '/categories'
 - Fetches a dictionary of categories in which the keys are the ids and the value is the corresponding string of the category
 - Request Arguments: None
-- Returns: An object with a single key, categories, that contains an object of id: category_string key:value pairs. 
+- Returns: An object with a single key, categories, that contains an object of id: category_string key:value pairs.
+```JSON
 {'1' : "Science",
 '2' : "Art",
 '3' : "Geography",
 '4' : "History",
 '5' : "Entertainment",
 '6' : "Sports"}
+```
 
-GET '/questions'
+#### GET '/questions'
 - Fetches a dictionary with categories, in which the keys are the ids and the value is the corresponding string of the category. 
 Also the dictionary have paginated questions, only shows 10 questions per page, in which the keys are the information of the question. 
 Finaly has the number of total questions. 
@@ -120,6 +107,9 @@ Finaly has the number of total questions.
     - difficulty: (int) the lv of the question difficulty
     - question: (String) the question of the quizz
     - answer: (String) the answer of the question
+
+Example
+```JSON
 {
     "categories": {
         "1": "science",
@@ -204,21 +194,22 @@ Finaly has the number of total questions.
     "success": true,
     "total_questions": 19
 }
-GET '/categories/<int:id>/questions'
+```
+#### GET '/categories/<int:id>/questions'
 - Fetches questions by categories, also fetch the information of the current category(type of category), and finaly the total questions found it.
 - Request arguments: Path parameter
     - "/categories/<int:id>/questions": it has to be put the id of the category to get all the questions of that category.
     - example: http://127.0.0.1:5000/categories/1/questions
 - Returns: Returns an object  with the current_category:
-            - id: (int) id of the category selected.
-            - type: (string) type of the category.
-            Also shows an array of questions fetched by the category with the next keys.
-            - id: (int) the id of the object
-            - category: (String) the category of the questions
-            - difficulty: (int) the lv of the question difficulty
-            - question: (String) the question of the quizz
-            - answer: (String) the answer of the question
-
+    - id: (int) id of the category selected.
+    - type: (string) type of the category.
+    Also shows an array of questions fetched by the category with the next keys.
+    - id: (int) the id of the object
+    - category: (String) the category of the questions
+    - difficulty: (int) the lv of the question difficulty
+    - question: (String) the question of the quizz
+    - answer: (String) the answer of the question
+```JSON
 {
     "current_category": {
         "id": 1,
@@ -250,7 +241,8 @@ GET '/categories/<int:id>/questions'
     "success": true,
     "total_questions": 3
 }
-POST '/questions'
+```
+#### POST '/questions'
 - Create a new question with the data provided through request body and returns a dictionary with the id of the created question, and if the request was success.
 - Request arguments: Request body JSON
     - question: (String) The question for the quizz.
@@ -260,12 +252,14 @@ POST '/questions'
 - Returns: Returns an object with the next Keys
     - "created": (int) the id of the created question
     - "success": (boolean) True if the question was created successfully or False if had a problem. 
+```JSON
 {
     "created": 25,
     "success": true
 }
+```
 
-POST '/questions/search'
+#### POST '/questions/search'
 - Fetches all the questions that match with the search_term provided 
 - Request arguments: Request body JSON
     - searchTerm: (String) The search term to find the questions.
@@ -277,6 +271,7 @@ POST '/questions/search'
         - difficulty: (int) the lv of the question difficulty
         - question: (String) the question of the quizz
         - answer: (String) the answer of the question
+```JSON
 {
     "current_category": null,
     "questions": [
@@ -305,28 +300,34 @@ POST '/questions/search'
     "success": true,
     "total_questions": 3
 }
-POST '/quizzes'
+```
+#### POST '/quizzes'
 - Fetches randomly questions to play the trivia of a specific category provided.
 - Request arguments: Request body JSON
     The first parameter that needs this API is the quiz_category, with the keys of id of the category and the type of category.
     If the id is 0,It means that is selected to play with all the categories.
     It also needs to add the "previous_questions", is an array of the IDs of the questions that was asked to the quizz, if the "previous_questions" is an empty array it means that there weren't questions asked previously, if it has Ids it means that those id are the questions asked before, and those questions won't be asked again.
-    Example:
+
+Example:
+```JSON
     {
     "quiz_category": {
         "id":0,
         "type":"All"
     },
     "previous_questions":[]
-}
+    }
+```
 - Returns: Returns an object with the category selected to play the quizz,
-    Also the random question of that category with the next keys:
+    - Also the random question of that category with the next keys:
         - id: (int) the id of the object
         - category: (String) the category of the questions
         - difficulty: (int) the lv of the question difficulty
         - question: (String) the question of the quizz
         - answer: (String) the answer of the question
-    If the question is null means that there is no more questions, and the quizz ended.
+    If the question is null it means that there is no more questions, and the quizz ended.
+
+```JSON
 {
     "category": {
         "id": 0,
@@ -341,25 +342,28 @@ POST '/quizzes'
     },
     "success": true
 }
+```
 
-DELETE '/questions/<int:id>'
+#### DELETE '/questions/<int:id>'
 - Delete a question with an id provided by the user.
 - Request arguments: Path parameters
     -  /questions/<int:id>: It needs the id of the question to delete it.
     - example: http://127.0.0.1:5000/questions/25
 - Returns: returns an object with the next keys
-        - "deleted": (Int) "The id of the deleted question"
-        - "success": (boolean) True if the question was deleted successfully or False if had a problem.
+    - "deleted": (Int) "The id of the deleted question"
+    - "success": (boolean) True if the question was deleted successfully or False if had a problem.
+Example
+```JSON
 {
     "deleted": 25,
     "success": true
 }
-```
+````
 
 
 ## Testing
 To run the tests, run
-```
+```bash
 dropdb trivia_test
 createdb trivia_test
 psql trivia_test < trivia.psql
